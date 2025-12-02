@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/theme_data.dart';
 import 'package:skriptarnica/providers/theme_provider.dart';
-import 'package:skriptarnica/screens/home_screen.dart';
+import 'package:skriptarnica/screens/root_screeen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
           title: 'FTN Skriptarnica',
           theme: Styles.themeData(
               isDarkTheme: themeProvider.getIsDarkTheme, context: context),
-          home: const HomeScreen(),
+          home: const RootScreen(),
         );
       }),
     );
