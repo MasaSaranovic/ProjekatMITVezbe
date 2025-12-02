@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 
-class Style {
+class Styles {
   static ThemeData themeData({
     required bool isDarkTheme,
     required BuildContext context,

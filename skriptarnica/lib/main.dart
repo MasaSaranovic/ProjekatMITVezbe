@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:skriptarnica/consts/theme_data.dart';
 import 'package:skriptarnica/providers/theme_provider.dart';
 import 'package:skriptarnica/screens/home_screen.dart';
 
@@ -19,13 +20,11 @@ class MyApp extends StatelessWidget {
           return ThemeProvider();
         }),
       ],
-      child: Consumer(builder: (context, themeProvider, child) {
+      child: Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'FTN Skriptarnica',
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-            useMaterial3: true,
-          ),
+          theme: Styles.themeData(
+              isDarkTheme: themeProvider.getIsDarkTheme, context: context),
           home: const HomeScreen(),
         );
       }),
