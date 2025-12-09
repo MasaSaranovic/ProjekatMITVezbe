@@ -12,6 +12,16 @@ class Styles {
           : AppColors.lightScaffoldColor,
       cardColor: isDarkTheme ? Colors.grey[800] : AppColors.lightCardColor,
       brightness: isDarkTheme ? Brightness.dark : Brightness.light,
+      appBarTheme: AppBarTheme(
+          backgroundColor: isDarkTheme
+              ? AppColors.darkScaffoldColor
+              : AppColors.lightScaffoldColor,
+          elevation: 0,
+          titleTextStyle: TextStyle(
+            color: isDarkTheme ? Colors.white : Colors.black,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          )),
     );
   }
 }
