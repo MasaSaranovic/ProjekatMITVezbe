@@ -3,7 +3,11 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 import 'package:skriptarnica/providers/theme_provider.dart';
+import 'package:skriptarnica/screens/inner_screen/orders/orders_screen.dart';
+import 'package:skriptarnica/screens/inner_screen/viewed_recently.dart';
+import 'package:skriptarnica/screens/inner_screen/wishlist.dart';
 import 'package:skriptarnica/services/assets_manager.dart';
+import 'package:skriptarnica/services/my_app_functions.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
 
@@ -91,17 +95,24 @@ class ProfileScreen extends StatelessWidget {
                   CustomListTile(
                     imagePath: "${AssetsManager.imagePath}/bag/checkout.png",
                     text: "All Orders",
-                    function: () {},
+                    function: () {
+                      Navigator.pushNamed(context, OrdersScreen.routeName);
+                    },
                   ),
                   CustomListTile(
                     imagePath: "${AssetsManager.imagePath}/bag/wishlist.png",
                     text: "Wishlist",
-                    function: () {},
+                    function: () {
+                      Navigator.pushNamed(context, WishlistScreen.routName);
+                    },
                   ),
                   CustomListTile(
                     imagePath: "${AssetsManager.imagePath}/profile/repeat.png",
                     text: "Viewed Recently",
-                    function: () {},
+                    function: () {
+                      Navigator.pushNamed(
+                          context, ViewedRecentlyScreen.routName);
+                    },
                   ),
                   CustomListTile(
                     imagePath: "${AssetsManager.imagePath}/address.png",
@@ -144,12 +155,19 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                onPressed: () {},
                 icon: const Icon(Icons.login, color: Colors.white),
                 label: const Text(
                   "Login",
                   style: TextStyle(color: Colors.white),
                 ),
+                onPressed: () async {
+                  await MyAppFunctions.showErrorOrWarningDialog(
+                    context: context,
+                    subtitle: "Are you sure you want to signout?",
+                    isError: false,
+                    fct: () {},
+                  );
+                },
               ),
             )
           ],

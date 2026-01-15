@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 import 'package:skriptarnica/consts/app_constants.dart';
+import 'package:skriptarnica/screens/inner_screen/product_details.dart';
+import 'package:skriptarnica/widgets/products/heart_btn.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
 
@@ -22,8 +24,8 @@ class _ProductWidgetState extends State<ProductWidget> {
     return Padding(
       padding: const EdgeInsets.all(0.0),
       child: GestureDetector(
-        onTap: () {
-          log("ToDo add the navigate to the product details screen");
+        onTap: () async {
+          Navigator.pushNamed(context, ProductDetailsScreen.routName);
         },
         child: Column(
           children: [
@@ -50,13 +52,7 @@ class _ProductWidgetState extends State<ProductWidget> {
                       maxLines: 2,
                     ),
                   ),
-                  Flexible(
-                    flex: 2,
-                    child: IconButton(
-                      onPressed: () {},
-                      icon: const Icon(IconlyLight.heart),
-                    ),
-                  ),
+                  const Flexible(flex: 2, child: HeartButtonWidget()),
                 ],
               ),
             ),

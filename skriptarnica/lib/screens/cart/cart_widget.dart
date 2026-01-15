@@ -4,6 +4,7 @@ import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 import 'package:skriptarnica/consts/app_constants.dart';
 import 'package:skriptarnica/screens/cart/quantity_btm_sheet.dart';
+import 'package:skriptarnica/widgets/products/heart_btn.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
 
@@ -54,11 +55,8 @@ class CartWidget extends StatelessWidget {
                               ),
                             ),
                             IconButton(
-                              onPressed: () {},
-                              icon: const Icon(
-                                IconlyLight.heart,
-                              ),
-                            ),
+                                onPressed: () {},
+                                icon: const HeartButtonWidget()),
                           ],
                         ),
                       ],

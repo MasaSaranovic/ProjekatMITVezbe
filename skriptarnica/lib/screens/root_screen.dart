@@ -7,6 +7,7 @@ import 'package:skriptarnica/screens/profile_screen.dart';
 import 'package:skriptarnica/screens/search_screen.dart';
 
 class RootScreen extends StatefulWidget {
+  static const String routeName = "/RootScreen";
   const RootScreen({super.key});
 
   @override
@@ -15,7 +16,7 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   late List<Widget> screens;
-  int currentScreen = 1;
+  int currentScreen = 0;
   late PageController controller;
 
   @override
