@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
+import 'package:skriptarnica/providers/cart_provider.dart';
+import 'package:skriptarnica/providers/products_provider.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
 
@@ -8,6 +11,8 @@ class CartBottomSheetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final productsProvider = Provider.of<ProductsProvider>(context);
+    final cartProvider = Provider.of<CartProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
@@ -22,15 +27,17 @@ class CartBottomSheetWidget extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Flexible(
+              Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     FittedBox(
                         child: TitelesTextWidget(
-                            label: "Total (5 products/10 items)")),
+                            label:
+                                "Total (${cartProvider.getCartitems.length} products/${cartProvider.getQty()} items)")),
                     SubtitleTextWidget(
-                      label: "2200 RSD",
+                      label:
+                          "${cartProvider.getTotal(productsProvider: productsProvider).toStringAsFixed(2)} RSD",
                       color: AppColors.darkPrimary,
                     ),
                   ],

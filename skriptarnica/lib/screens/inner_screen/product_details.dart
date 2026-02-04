@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
-import 'package:skriptarnica/consts/app_constants.dart';
+import 'package:skriptarnica/providers/cart_provider.dart';
+import 'package:skriptarnica/providers/products_provider.dart';
 import 'package:skriptarnica/widgets/products/heart_btn.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
@@ -18,6 +22,10 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    final productsProvider = Provider.of<ProductsProvider>(context);
+    String? productId = ModalRoute.of(context)!.settings.arguments as String?;
+    final getCurrProduct = productsProvider.findByProductId(productId!);
+    final cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
           centerTitle: true,
@@ -35,102 +43,126 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
           ),
 // automaticallyImplyLeading: false,
           title: const Text("FTN Script Store")),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            FancyShimmerImage(
-              imageUrl: AppConstants.imageUrl,
-              height: size.height * 0.38,
-              width: double.infinity,
-            ),
-            const SizedBox(
-              height: 20,
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+      body: getCurrProduct == null
+          ? const SizedBox.shrink()
+          : SingleChildScrollView(
               child: Column(
                 children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Flexible(
-                        child: Text(
-                          "Title" * 18,
-                          softWrap: true,
-                          style: const TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 20,
-                      ),
-                      const SubtitleTextWidget(
-                        label: "1550.00 RSD",
-                        fontSize: 20,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.darkPrimary,
-                      ),
-                    ],
+                  FancyShimmerImage(
+                    imageUrl: getCurrProduct.productImage,
+                    height: size.height * 0.38,
+                    width: double.infinity,
                   ),
                   const SizedBox(
                     height: 20,
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
                       children: [
-                        const HeartButtonWidget(
-                          bkgColor: AppColors.darkPrimary,
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                getCurrProduct.productTitle,
+                                softWrap: true,
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.w700),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 20,
+                            ),
+                            SubtitleTextWidget(
+                              label: "${getCurrProduct.productPrice} RSD",
+                              fontSize: 20,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.darkPrimary,
+                            ),
+                          ],
                         ),
                         const SizedBox(
-                          width: 20,
+                          height: 20,
                         ),
-                        Expanded(
-                          child: SizedBox(
-                            height: kBottomNavigationBarHeight - 10,
-                            child: ElevatedButton.icon(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.darkPrimary,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    30.0,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              HeartButtonWidget(
+                                productId: getCurrProduct.productId,
+                              ),
+                              const SizedBox(
+                                width: 20,
+                              ),
+                              Expanded(
+                                child: SizedBox(
+                                  height: kBottomNavigationBarHeight - 10,
+                                  child: ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.darkPrimary,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(
+                                          30.0,
+                                        ),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      if (cartProvider.isProdinCart(
+                                          productId:
+                                              getCurrProduct.productId)) {
+                                        return;
+                                      }
+                                      cartProvider.addProductToCart(
+                                        productId: getCurrProduct.productId,
+                                      );
+                                    },
+                                    icon: Icon(
+                                      cartProvider.isProdinCart(
+                                              productId:
+                                                  getCurrProduct.productId)
+                                          ? Icons.check
+                                          : Icons.add_shopping_cart_outlined,
+                                      color: Colors.white,
+                                    ),
+                                    label: Text(
+                                      cartProvider.isProdinCart(
+                                              productId:
+                                                  getCurrProduct.productId)
+                                          ? "In cart"
+                                          : "Add to cart",
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                 ),
                               ),
-                              onPressed: () {},
-                              icon: const Icon(Icons.add_shopping_cart,
-                                  color: Colors.white),
-                              label: const Text(
-                                "Add to cart",
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
+                            ],
                           ),
                         ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const TitelesTextWidget(label: "About this item"),
+                            SubtitleTextWidget(
+                                label: "In ${getCurrProduct.productCategory}"),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 15,
+                        ),
+                        SubtitleTextWidget(
+                            label: getCurrProduct.productDescription),
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  const Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TitelesTextWidget(label: "About this item"),
-                      SubtitleTextWidget(label: "In Books"),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 15,
-                  ),
-                  SubtitleTextWidget(label: "Description" * 15),
+                  )
                 ],
               ),
-            )
-          ],
-        ),
-      ),
+            ),
     );
   }
 }

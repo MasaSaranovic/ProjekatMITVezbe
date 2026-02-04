@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/theme_data.dart';
+import 'package:skriptarnica/providers/cart_provider.dart';
+import 'package:skriptarnica/providers/products_provider.dart';
 import 'package:skriptarnica/providers/theme_provider.dart';
+import 'package:skriptarnica/providers/viewed_recently_provider.dart';
+import 'package:skriptarnica/providers/wishlist_provider.dart';
+import 'package:skriptarnica/screens/auth/forgot_password.dart';
 import 'package:skriptarnica/screens/auth/login.dart';
 import 'package:skriptarnica/screens/auth/register.dart';
 import 'package:skriptarnica/screens/inner_screen/orders/orders_screen.dart';
@@ -9,6 +14,7 @@ import 'package:skriptarnica/screens/inner_screen/product_details.dart';
 import 'package:skriptarnica/screens/inner_screen/viewed_recently.dart';
 import 'package:skriptarnica/screens/inner_screen/wishlist.dart';
 import 'package:skriptarnica/screens/root_screen.dart';
+import 'package:skriptarnica/screens/search_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,9 +31,22 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) {
           return ThemeProvider();
         }),
+        ChangeNotifierProvider(create: (_) {
+          return ProductsProvider();
+        }),
+        ChangeNotifierProvider(create: (_) {
+          return CartProvider();
+        }),
+        ChangeNotifierProvider(create: (_) {
+          return WishlistProvider();
+        }),
+        ChangeNotifierProvider(create: (_) {
+          return ViewedProdProvider();
+        }),
       ],
       child: Consumer<ThemeProvider>(builder: (context, themeProvider, child) {
         return MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'FTN Skriptarnica',
             theme: Styles.themeData(
                 isDarkTheme: themeProvider.getIsDarkTheme, context: context),
@@ -43,6 +62,9 @@ class MyApp extends StatelessWidget {
               RegisterScreen.routName: (context) => const RegisterScreen(),
               LoginScreen.routeName: (context) => const LoginScreen(),
               OrdersScreen.routeName: (context) => const OrdersScreen(),
+              ForgotPasswordScreen.routeName: (context) =>
+                  const ForgotPasswordScreen(),
+              SearchScreen.routName: (context) => const SearchScreen(),
             });
       }),
     );

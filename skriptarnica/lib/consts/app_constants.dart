@@ -1,4 +1,4 @@
-import 'package:skriptarnica/modals/categories_model.dart';
+import 'package:skriptarnica/models/categories_model.dart';
 import 'package:skriptarnica/services/assets_manager.dart';
 
 class AppConstants {

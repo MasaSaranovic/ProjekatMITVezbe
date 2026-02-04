@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:provider/provider.dart';
+import 'package:skriptarnica/consts/app_colors.dart';
+import 'package:skriptarnica/providers/wishlist_provider.dart';
 
 class HeartButtonWidget extends StatefulWidget {
   const HeartButtonWidget({
     super.key,
     this.bkgColor = Colors.transparent,
     this.size = 20,
+    required this.productId,
+    //this.isInWishlist,
   });
   final Color bkgColor;
   final double size;
+  final String productId;
+  //final bool? isInWishlist;
   @override
   State<HeartButtonWidget> createState() => _HeartButtonWidgetState();
 }
@@ -16,6 +23,7 @@ class HeartButtonWidget extends StatefulWidget {
 class _HeartButtonWidgetState extends State<HeartButtonWidget> {
   @override
   Widget build(BuildContext context) {
+    final wishlistsProvider = Provider.of<WishlistProvider>(context);
     return Container(
       decoration: BoxDecoration(
         color: widget.bkgColor,
@@ -23,11 +31,23 @@ class _HeartButtonWidgetState extends State<HeartButtonWidget> {
       ),
       child: IconButton(
         style: IconButton.styleFrom(elevation: 10),
-        onPressed: () {},
+        onPressed: () {
+          wishlistsProvider.addOrRemoveFromWishlist(
+            productId: widget.productId,
+          );
+        },
         icon: Icon(
-          IconlyLight.heart,
+          wishlistsProvider.isProdinWishlist(
+            productId: widget.productId,
+          )
+              ? IconlyBold.heart
+              : IconlyLight.heart,
           size: widget.size,
-          color: Colors.white,
+          color: wishlistsProvider.isProdinWishlist(
+            productId: widget.productId,
+          )
+              ? AppColors.lightPrimary
+              : AppColors.darkPrimary,
         ),
       ),
     );

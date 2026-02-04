@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:skriptarnica/consts/validator.dart';
+import 'package:skriptarnica/screens/auth/forgot_password.dart';
 import 'package:skriptarnica/screens/auth/register.dart';
 import 'package:skriptarnica/screens/root_screen.dart';
 import 'package:skriptarnica/services/assets_manager.dart';
@@ -155,7 +156,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       Align(
                         alignment: Alignment.centerRight,
                         child: TextButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            Navigator.of(context)
+                                .pushNamed(ForgotPasswordScreen.routeName);
+                          },
                           child: const SubtitleTextWidget(
                             label: "Forgot password?",
                             fontStyle: FontStyle.italic,
