@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:skriptarnica/models/viewed_products.dart';
-import 'package:skriptarnica/models/wishlist_model.dart';
 import 'package:uuid/uuid.dart';
 
 class ViewedProdProvider with ChangeNotifier {

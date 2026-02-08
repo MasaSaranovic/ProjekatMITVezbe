@@ -1,4 +1,3 @@
-import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
@@ -6,6 +5,7 @@ import 'package:skriptarnica/providers/cart_provider.dart';
 import 'package:skriptarnica/providers/products_provider.dart';
 import 'package:skriptarnica/providers/viewed_recently_provider.dart';
 import 'package:skriptarnica/screens/inner_screen/product_details.dart';
+import 'package:skriptarnica/services/my_app_functions.dart';
 import 'package:skriptarnica/widgets/products/heart_btn.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
@@ -46,13 +46,41 @@ class _ProductWidgetState extends State<ProductWidget> {
               },
               child: Column(
                 children: [
+                  // ClipRRect(
+                  //   borderRadius: BorderRadius.circular(12.0),
+                  //   child: FancyShimmerImage(
+                  //     //imageUrl: widget.image ?? AppConstants.imageUrl,
+                  //     imageUrl: getCurrProduct.productImage,
+                  //     height: size.height * 0.22,
+                  //     width: double.infinity,
+                  //   ),
+                  // ),
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12.0),
-                    child: FancyShimmerImage(
-                      //imageUrl: widget.image ?? AppConstants.imageUrl,
-                      imageUrl: getCurrProduct.productImage,
+                    child: Image.network(
+                      getCurrProduct.productImage,
                       height: size.height * 0.22,
                       width: double.infinity,
+                      fit: BoxFit.cover,
+
+                      // loading indikator dok se slika učitava
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return SizedBox(
+                          height: size.height * 0.22,
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      },
+
+                      // ako slika ne postoji
+                      errorBuilder: (context, error, stackTrace) {
+                        return SizedBox(
+                          height: size.height * 0.22,
+                          child: const Icon(Icons.image_not_supported),
+                        );
+                      },
                     ),
                   ),
                   const SizedBox(
@@ -103,14 +131,28 @@ class _ProductWidgetState extends State<ProductWidget> {
                             color: AppColors.lightPrimary,
                             child: InkWell(
                               borderRadius: BorderRadius.circular(12.0),
-                              onTap: () {
+                              onTap: () async {
                                 if (cartProvider.isProdinCart(
                                     productId: getCurrProduct.productId)) {
                                   return;
                                 }
-                                cartProvider.addProductToCart(
-                                  productId: getCurrProduct.productId,
-                                );
+                                try {
+                                  await cartProvider.addToCartFirebase(
+                                      productId: getCurrProduct.productId,
+                                      qty: 1,
+                                      context: context);
+                                } catch (e) {
+                                  await MyAppFunctions.showErrorOrWarningDialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    subtitle: e.toString(),
+                                    fct: () {},
+                                  );
+                                }
+
+                                // cartProvider.addProductToCart(
+                                //   productId: getCurrProduct.productId,
+                                // );
                               },
                               splashColor: Colors.blueGrey,
                               child: Padding(

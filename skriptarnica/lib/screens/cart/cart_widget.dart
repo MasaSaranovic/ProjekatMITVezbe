@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
-import 'package:skriptarnica/consts/app_constants.dart';
 import 'package:skriptarnica/models/cart_model.dart';
 import 'package:skriptarnica/providers/cart_provider.dart';
 import 'package:skriptarnica/providers/products_provider.dart';
@@ -61,9 +60,13 @@ class CartWidget extends StatelessWidget {
                                 children: [
                                   IconButton(
                                     onPressed: () {
-                                      cartProvider.removeOneItem(
-                                        productId: getCurrProduct.productId,
-                                      );
+                                      cartProvider.removeCartItemFromFirestore(
+                                          cartId: cartModel.cartId,
+                                          productId: getCurrProduct.productId,
+                                          qty: cartModel.quantity);
+                                      // cartProvider.removeOneItem(
+                                      //   productId: getCurrProduct.productId,
+                                      // );
                                     },
                                     icon: const Icon(
                                       Icons.clear,

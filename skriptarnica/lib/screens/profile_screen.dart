@@ -1,8 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
+import 'package:skriptarnica/models/user_model.dart';
 import 'package:skriptarnica/providers/theme_provider.dart';
+import 'package:skriptarnica/providers/user_provider.dart';
+import 'package:skriptarnica/screens/auth/login.dart';
 import 'package:skriptarnica/screens/inner_screen/orders/orders_screen.dart';
 import 'package:skriptarnica/screens/inner_screen/viewed_recently.dart';
 import 'package:skriptarnica/screens/inner_screen/wishlist.dart';
@@ -11,11 +15,46 @@ import 'package:skriptarnica/services/my_app_functions.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+  User? user = FirebaseAuth.instance.currentUser;
+
+  UserModel? userModel;
+  Future<void> fetchUserInfo() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    try {
+      setState(() {});
+      userModel = await userProvider.fetchUserInfo();
+    } catch (error) {
+      await MyAppFunctions.showErrorOrWarningDialog(
+        // ignore: use_build_context_synchronously
+        context: context,
+        subtitle: error.toString(),
+        fct: () {},
+      );
+    } finally {
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    fetchUserInfo();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
@@ -31,51 +70,51 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Visibility(
-              visible: false,
-              child: Padding(
+            Visibility(
+              visible: user == null ? true : false,
+              child: const Padding(
                 padding: EdgeInsets.all(18.0),
                 child: TitelesTextWidget(
                     label: "Please login to have unlimited access"),
               ),
             ),
-            Visibility(
-              visible: true,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 60,
-                      height: 60,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Theme.of(context).cardColor,
-                        border: Border.all(
-                            color: Theme.of(context).colorScheme.surface,
-                            width: 3),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                              "https://cdn.pixabay.com/photo/2017/11/10/05/48/user-2935527_1280.png"),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            userModel == null
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 10.0, vertical: 5),
+                    child: Row(
                       children: [
-                        TitelesTextWidget(label: "Masa Saranovic"),
-                        SubtitleTextWidget(label: "masa.saranovic@uns.ac.rs")
+                        Container(
+                          width: 60,
+                          height: 60,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Theme.of(context).cardColor,
+                            border: Border.all(
+                                color: Theme.of(context).colorScheme.surface,
+                                width: 3),
+                            image: DecorationImage(
+                              image: NetworkImage(
+                                userModel!.userImage,
+                              ),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TitelesTextWidget(label: userModel!.userName),
+                            SubtitleTextWidget(label: userModel!.userEmail)
+                          ],
+                        )
                       ],
-                    )
-                  ],
-                ),
-              ),
-            ),
+                    ),
+                  ),
             const SizedBox(
               height: 15,
             ),
@@ -92,19 +131,25 @@ class ProfileScreen extends StatelessWidget {
                   const SizedBox(
                     height: 10,
                   ),
-                  CustomListTile(
-                    imagePath: "${AssetsManager.imagePath}/bag/checkout.png",
-                    text: "All Orders",
-                    function: () {
-                      Navigator.pushNamed(context, OrdersScreen.routeName);
-                    },
+                  Visibility(
+                    visible: userModel == null ? false : true,
+                    child: CustomListTile(
+                      imagePath: "${AssetsManager.imagePath}/bag/checkout.png",
+                      text: "All Orders",
+                      function: () {
+                        Navigator.pushNamed(context, OrdersScreen.routeName);
+                      },
+                    ),
                   ),
-                  CustomListTile(
-                    imagePath: "${AssetsManager.imagePath}/bag/wishlist.png",
-                    text: "Wishlist",
-                    function: () {
-                      Navigator.pushNamed(context, WishlistScreen.routName);
-                    },
+                  Visibility(
+                    visible: userModel == null ? false : true,
+                    child: CustomListTile(
+                      imagePath: "${AssetsManager.imagePath}/bag/wishlist.png",
+                      text: "Wishlist",
+                      function: () {
+                        Navigator.pushNamed(context, WishlistScreen.routName);
+                      },
+                    ),
                   ),
                   CustomListTile(
                     imagePath: "${AssetsManager.imagePath}/profile/repeat.png",
@@ -155,18 +200,30 @@ class ProfileScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(12.0),
                   ),
                 ),
-                icon: const Icon(Icons.login, color: Colors.white),
-                label: const Text(
-                  "Login",
-                  style: TextStyle(color: Colors.white),
+                icon: Icon(user == null ? Icons.login : Icons.logout,
+                    color: Colors.white),
+                label: Text(
+                  user == null ? "Login" : "Logout",
+                  style: const TextStyle(color: Colors.white),
                 ),
                 onPressed: () async {
-                  await MyAppFunctions.showErrorOrWarningDialog(
-                    context: context,
-                    subtitle: "Are you sure you want to signout?",
-                    isError: false,
-                    fct: () {},
-                  );
+                  if (user == null) {
+                    Navigator.pushNamed(context, LoginScreen.routeName);
+                  } else {
+                    await MyAppFunctions.showErrorOrWarningDialog(
+                      context: context,
+                      subtitle: "Are you sure you want to signout?",
+                      isError: false,
+                      fct: () async {
+                        await FirebaseAuth.instance.signOut();
+                        if (!mounted) return;
+                        Navigator.pushReplacementNamed(
+                            // ignore: use_build_context_synchronously
+                            context,
+                            LoginScreen.routeName);
+                      },
+                    );
+                  }
                 },
               ),
             )

@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:fancy_shimmer_image/fancy_shimmer_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 import 'package:skriptarnica/providers/cart_provider.dart';
 import 'package:skriptarnica/providers/products_provider.dart';
+import 'package:skriptarnica/services/my_app_functions.dart';
 import 'package:skriptarnica/widgets/products/heart_btn.dart';
 import 'package:skriptarnica/widgets/subtitle_text.dart';
 import 'package:skriptarnica/widgets/title_text.dart';
@@ -108,15 +107,26 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                                         ),
                                       ),
                                     ),
-                                    onPressed: () {
+                                    onPressed: () async {
                                       if (cartProvider.isProdinCart(
                                           productId:
                                               getCurrProduct.productId)) {
                                         return;
                                       }
-                                      cartProvider.addProductToCart(
-                                        productId: getCurrProduct.productId,
-                                      );
+                                      try {
+                                        await cartProvider.addToCartFirebase(
+                                            productId: getCurrProduct.productId,
+                                            qty: 1,
+                                            context: context);
+                                      } catch (e) {
+                                        await MyAppFunctions
+                                            .showErrorOrWarningDialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          subtitle: e.toString(),
+                                          fct: () {},
+                                        );
+                                      }
                                     },
                                     icon: Icon(
                                       cartProvider.isProdinCart(

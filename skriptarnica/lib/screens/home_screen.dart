@@ -37,7 +37,7 @@ class HomeScreen extends StatelessWidget {
                 child: ClipRRect(
 // borderRadius: BorderRadius.circular(50),
                   child: Swiper(
-                    autoplay: true,
+                    autoplay: false,
                     itemBuilder: (BuildContext context, int index) {
                       return Image.asset(
                         AppConstants.bannersImages[index],
@@ -57,20 +57,28 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(
                 height: 15.0,
               ),
-              const TitelesTextWidget(label: "Latest arrival"),
+              Visibility(
+                visible: productProvider.getProducts.isNotEmpty,
+                child: const TitelesTextWidget(label: "Latest arrival"),
+              ),
               const SizedBox(
                 height: 15.0,
               ),
-              SizedBox(
-                height: size.height * 0.2,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: 10,
-                    itemBuilder: (context, index) {
-                      return ChangeNotifierProvider.value(
-                          value: productProvider.getProducts[index],
-                          child: const LatestArrivalProductsWidget());
-                    }),
+              Visibility(
+                visible: productProvider.getProducts.isNotEmpty,
+                child: SizedBox(
+                  height: size.height * 0.2,
+                  child: ListView.builder(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: productProvider.getProducts.length < 10
+                          ? productProvider.getProducts.length
+                          : 10,
+                      itemBuilder: (context, index) {
+                        return ChangeNotifierProvider.value(
+                            value: productProvider.getProducts[index],
+                            child: const LatestArrivalProductsWidget());
+                      }),
+                ),
               ),
               const TitelesTextWidget(label: "Categories"),
               const SizedBox(

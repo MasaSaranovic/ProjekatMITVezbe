@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:provider/provider.dart';
 import 'package:skriptarnica/consts/app_colors.dart';
 import 'package:skriptarnica/providers/cart_provider.dart';
+import 'package:skriptarnica/providers/products_provider.dart';
+import 'package:skriptarnica/providers/user_provider.dart';
+import 'package:skriptarnica/providers/wishlist_provider.dart';
 import 'package:skriptarnica/screens/cart/cart_screen.dart';
 import 'package:skriptarnica/screens/home_screen.dart';
 import 'package:skriptarnica/screens/profile_screen.dart';
@@ -20,7 +25,7 @@ class _RootScreenState extends State<RootScreen> {
   late List<Widget> screens;
   int currentScreen = 0;
   late PageController controller;
-
+  bool isLoadingProd = true;
   @override
   void initState() {
     super.initState();
@@ -32,6 +37,36 @@ class _RootScreenState extends State<RootScreen> {
       ProfileScreen(),
     ];
     controller = PageController(initialPage: currentScreen);
+  }
+
+  Future<void> fetchFCT() async {
+    final productsProvider =
+        Provider.of<ProductsProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final wishlistsProvider =
+        Provider.of<WishlistProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+
+    try {
+      Future.wait({
+        productsProvider.fetchProducts(),
+        userProvider.fetchUserInfo(),
+      });
+      Future.wait({
+        cartProvider.fetchCart(),
+        wishlistsProvider.fetchWishlist(),
+      });
+    } catch (error) {
+      log(error.toString());
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (isLoadingProd) {
+      fetchFCT();
+    }
+    super.didChangeDependencies();
   }
 
   @override

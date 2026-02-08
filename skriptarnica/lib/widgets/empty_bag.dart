@@ -7,6 +7,7 @@ class EmptyBagWidget extends StatelessWidget {
   const EmptyBagWidget(
       {super.key, this.imagePath, this.title, this.subtitle, this.buttonText});
 
+  // ignore: prefer_typing_uninitialized_variables
   final imagePath, title, subtitle, buttonText;
 
   @override

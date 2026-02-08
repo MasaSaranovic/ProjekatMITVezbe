@@ -1,7 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:skriptarnica/consts/validator.dart';
+import 'package:skriptarnica/screens/root_screen.dart';
 import 'package:skriptarnica/services/assets_manager.dart';
 import 'package:skriptarnica/services/my_app_functions.dart';
 import 'package:skriptarnica/widgets/auth/image_picker_widget.dart';
@@ -27,6 +31,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       _repeatPasswordFocusNode;
   final _formkey = GlobalKey<FormState>();
   XFile? _pickedImage;
+  final auth = FirebaseAuth.instance;
   @override
   void initState() {
     _nameController = TextEditingController();
@@ -60,6 +65,48 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _registerFCT() async {
     final isValid = _formkey.currentState!.validate();
     FocusScope.of(context).unfocus();
+
+    if (isValid) {
+      try {
+        setState(() {});
+
+        await auth.createUserWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
+        final User? user = auth.currentUser;
+        final String uid = user!.uid;
+        await FirebaseFirestore.instance.collection("users").doc(uid).set({
+          "userId": uid,
+          "userName": _nameController.text.trim(),
+          "userImage": "",
+          "userEmail": _emailController.text.trim(),
+          "createdAt": Timestamp.now(),
+          "userCart": [],
+          "userWish": [],
+        });
+        Fluttertoast.showToast(
+          msg: "An account has been created",
+          textColor: Colors.white,
+        );
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, RootScreen.routeName);
+      } on FirebaseException catch (error) {
+        await MyAppFunctions.showErrorOrWarningDialog(
+          context: context,
+          subtitle: error.message.toString(),
+          fct: () {},
+        );
+      } catch (error) {
+        await MyAppFunctions.showErrorOrWarningDialog(
+          context: context,
+          subtitle: error.toString(),
+          fct: () {},
+        );
+      } finally {
+        setState(() {});
+      }
+    }
   }
 
   Future<void> localImagePicker() async {
